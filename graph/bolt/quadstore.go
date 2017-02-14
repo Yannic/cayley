@@ -31,25 +31,11 @@ import (
 	"github.com/cayleygraph/cayley/quad/pquads"
 )
 
-func init() {
-	graph.RegisterQuadStore(QuadStoreType, graph.QuadStoreRegistration{
-		NewFunc:           newQuadStore,
-		NewForRequestFunc: nil,
-		UpgradeFunc:       upgradeBolt,
-		InitFunc:          createNewBolt,
-		IsPersistent:      true,
-	})
-}
-
 var (
 	errNoBucket = errors.New("bolt: bucket is missing")
 )
 
 const localFillPercent = 0.7
-
-const (
-	QuadStoreType = "bolt"
-)
 
 var _ graph.Keyer = (*Token)(nil)
 

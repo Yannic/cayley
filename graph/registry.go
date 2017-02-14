@@ -26,24 +26,30 @@ var (
 
 var storeRegistry = make(map[string]QuadStoreRegistration)
 
-type NewStoreFunc func(string, Options) (QuadStore, error)
-type InitStoreFunc func(string, Options) error
-type UpgradeStoreFunc func(string, Options) error
-type NewStoreForRequestFunc func(QuadStore, Options) (QuadStore, error)
+// TODO: better documentation
+type QuadStoreRegistration interface {
+	// Create new QuadStore
+	// Must return ErrOperationNotSupported if operation is not supported
+	New(string, Options) (QuadStore, error)
 
-type QuadStoreRegistration struct {
-	NewFunc           NewStoreFunc
-	NewForRequestFunc NewStoreForRequestFunc
-	UpgradeFunc       UpgradeStoreFunc
-	InitFunc          InitStoreFunc
-	IsPersistent      bool
+	// Create new QuadStore for request
+	// Must return ErrOperationNotSupported if operation is not supported
+	NewForRequest(QuadStore, Options) (QuadStore, error)
+
+	// Upgrade existing QuadStore
+	// Must return ErrOperationNotSupported if operation is not supported
+	Upgrade(string, Options) error
+
+	// Initialize new QuadStore
+	// Must return ErrOperationNotSupported if operation is not supported
+	Init(string, Options) error
+
+	// QuadStore is persistent
+	// Must return ErrOperationNotSupported if operation is not supported
+	IsPersistent() bool
 }
 
 func RegisterQuadStore(name string, register QuadStoreRegistration) {
-	if register.NewFunc == nil {
-		panic("NewFunc must not be nil")
-	}
-
 	// Register QuadStore with friendly name
 	if _, found := storeRegistry[name]; found {
 		panic(fmt.Sprintf("Already registered QuadStore \"%s\".", name))
@@ -51,7 +57,17 @@ func RegisterQuadStore(name string, register QuadStoreRegistration) {
 	storeRegistry[name] = register
 
 	// Also Register QuadStore with pkgPath
-	pkgPath := reflect.TypeOf(register.NewFunc).PkgPath()
+	var pkgPath string
+	_type := reflect.TypeOf(register)
+	if _type.Kind() == reflect.Ptr {
+		pkgPath = _type.Elem().PkgPath()
+	} else {
+		pkgPath = _type.PkgPath()
+	}
+
+	if _, found := storeRegistry[pkgPath]; found {
+		panic(fmt.Sprintf("Already registered QuadStore \"%s\".", pkgPath))
+	}
 	storeRegistry[pkgPath] = register
 }
 
@@ -61,7 +77,7 @@ func NewQuadStore(name string, dbpath string, opts Options) (QuadStore, error) {
 		return nil, ErrQuadStoreNotRegistred
 	}
 
-	return r.NewFunc(dbpath, opts)
+	return r.New(dbpath, opts)
 }
 
 func NewQuadStoreForRequest(qs QuadStore, opts Options) (QuadStore, error) {
@@ -71,11 +87,7 @@ func NewQuadStoreForRequest(qs QuadStore, opts Options) (QuadStore, error) {
 		return nil, ErrQuadStoreNotRegistred
 	}
 
-	if r.NewForRequestFunc == nil {
-		return nil, ErrOperationNotSupported
-	}
-
-	return r.NewForRequestFunc(qs, opts)
+	return r.NewForRequest(qs, opts)
 }
 
 func UpgradeQuadStore(name string, dbpath string, opts Options) error {
@@ -84,29 +96,25 @@ func UpgradeQuadStore(name string, dbpath string, opts Options) error {
 		return ErrQuadStoreNotRegistred
 	}
 
-	if r.UpgradeFunc == nil {
-		return ErrOperationNotSupported
-	}
-
-	return r.UpgradeFunc(dbpath, opts)
+	return r.Upgrade(dbpath, opts)
 }
 
 func InitQuadStore(name string, dbpath string, opts Options) error {
 	r, registered := storeRegistry[name]
 	if !registered {
 		return ErrQuadStoreNotRegistred
-
 	}
 
-	if r.InitFunc == nil {
-		return ErrOperationNotSupported
-	}
-
-	return r.InitFunc(dbpath, opts)
+	return r.Init(dbpath, opts)
 }
 
 func IsPersistent(name string) bool {
-	return storeRegistry[name].IsPersistent
+	r, registered := storeRegistry[name]
+	if !registered {
+		return false
+	}
+
+	return r.IsPersistent()
 }
 
 func QuadStores() []string {

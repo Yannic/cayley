@@ -16,18 +16,6 @@ import (
 	"github.com/cayleygraph/cayley/quad/pquads"
 )
 
-const QuadStoreType = "sql"
-
-func init() {
-	graph.RegisterQuadStore(QuadStoreType, graph.QuadStoreRegistration{
-		NewFunc:           newQuadStore,
-		NewForRequestFunc: nil,
-		UpgradeFunc:       nil,
-		InitFunc:          createSQLTables,
-		IsPersistent:      true,
-	})
-}
-
 type NodeHash [quad.HashSize]byte
 
 func (NodeHash) IsNode() bool { return true }

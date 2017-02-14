@@ -32,9 +32,8 @@ import (
 )
 
 const (
-	QuadStoreType = "gaedatastore"
-	quadKind      = "quad"
-	nodeKind      = "node"
+	quadKind = "quad"
+	nodeKind = "node"
 )
 
 var (
@@ -78,16 +77,6 @@ type LogEntry struct {
 	Action    string
 	Key       string
 	Timestamp int64
-}
-
-func init() {
-	graph.RegisterQuadStore("gaedatastore", graph.QuadStoreRegistration{
-		NewFunc:           newQuadStore,
-		NewForRequestFunc: newQuadStoreForRequest,
-		UpgradeFunc:       nil,
-		InitFunc:          initQuadStore,
-		IsPersistent:      true,
-	})
 }
 
 func initQuadStore(_ string, _ graph.Options) error {

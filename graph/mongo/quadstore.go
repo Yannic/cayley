@@ -32,17 +32,6 @@ import (
 )
 
 const DefaultDBName = "cayley"
-const QuadStoreType = "mongo"
-
-func init() {
-	graph.RegisterQuadStore(QuadStoreType, graph.QuadStoreRegistration{
-		NewFunc:           newQuadStore,
-		NewForRequestFunc: nil,
-		UpgradeFunc:       nil,
-		InitFunc:          createNewMongoGraph,
-		IsPersistent:      true,
-	})
-}
 
 type NodeHash string
 

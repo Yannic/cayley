@@ -26,20 +26,6 @@ import (
 	"github.com/cayleygraph/cayley/quad"
 )
 
-const QuadStoreType = "memstore"
-
-func init() {
-	graph.RegisterQuadStore(QuadStoreType, graph.QuadStoreRegistration{
-		NewFunc: func(string, graph.Options) (graph.QuadStore, error) {
-			return newQuadStore(), nil
-		},
-		NewForRequestFunc: nil,
-		UpgradeFunc:       nil,
-		InitFunc:          nil,
-		IsPersistent:      false,
-	})
-}
-
 var _ quad.Writer = (*QuadStore)(nil)
 
 func cmp(a, b int64) int {

@@ -31,20 +31,9 @@ import (
 	"github.com/cayleygraph/cayley/quad/pquads"
 )
 
-func init() {
-	graph.RegisterQuadStore(QuadStoreType, graph.QuadStoreRegistration{
-		NewFunc:           newQuadStore,
-		NewForRequestFunc: nil,
-		UpgradeFunc:       upgradeLevelDB,
-		InitFunc:          createNewLevelDB,
-		IsPersistent:      true,
-	})
-}
-
 const (
 	DefaultCacheSize       = 2
 	DefaultWriteBufferSize = 20
-	QuadStoreType          = "leveldb"
 	horizonKey             = "__horizon"
 	sizeKey                = "__size"
 	versionKey             = "__version"
