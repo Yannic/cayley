@@ -1,0 +1,57 @@
+# Copyright 2017 The Cayley Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["cayley.go"],
+    importpath = "github.com/cayleygraph/cayley/cmd/cayley",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//clog:go_default_library",
+        "//clog/glog:go_default_library",
+        "//cmd/cayley/command:go_default_library",
+        "//graph:go_default_library",
+        "//graph/bolt:go_default_library",
+        "//graph/bolt2:go_default_library",
+        "//graph/leveldb:go_default_library",
+        "//graph/memstore:go_default_library",
+        "//graph/mongo:go_default_library",
+        "//graph/sql:go_default_library",
+        "//quad:go_default_library",
+        "//quad/dot:go_default_library",
+        "//quad/gml:go_default_library",
+        "//quad/graphml:go_default_library",
+        "//quad/json:go_default_library",
+        "//quad/jsonld:go_default_library",
+        "//quad/nquads:go_default_library",
+        "//quad/pquads:go_default_library",
+        "//query/gizmo:go_default_library",
+        "//query/graphql:go_default_library",
+        "//query/mql:go_default_library",
+        "//query/sexp:go_default_library",
+        "//version:go_default_library",
+        "//writer:go_default_library",
+        "@com_github_spf13_cobra//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "cayley",
+    importpath = "github.com/cayleygraph/cayley/cmd/cayley",
+    library = ":go_default_library",
+    visibility = ["//visibility:public"],
+)

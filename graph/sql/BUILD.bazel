@@ -1,0 +1,58 @@
+# Copyright 2017 The Cayley Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "all_iterator.go",
+        "cockroach.go",
+        "mysql.go",
+        "optimizers.go",
+        "postgres.go",
+        "quadstore.go",
+        "sql_iterator.go",
+        "sql_link_iterator.go",
+        "sql_node_intersection.go",
+        "sql_node_iterator.go",
+    ],
+    importpath = "github.com/cayleygraph/cayley/graph/sql",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//clog:go_default_library",
+        "//graph:go_default_library",
+        "//graph/iterator:go_default_library",
+        "//internal/lru:go_default_library",
+        "//quad:go_default_library",
+        "//quad/pquads:go_default_library",
+        "@com_github_go_sql_driver_mysql//:go_default_library",
+        "@com_github_lib_pq//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "optimizers_test.go",
+        "sql_link_iterator_test.go",
+    ],
+    importpath = "github.com/cayleygraph/cayley/graph/sql",
+    library = ":go_default_library",
+    deps = [
+        "//graph:go_default_library",
+        "//graph/iterator:go_default_library",
+        "//quad:go_default_library",
+    ],
+)

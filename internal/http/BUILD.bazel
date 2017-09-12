@@ -1,0 +1,47 @@
+# Copyright 2017 The Cayley Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "docs.go",
+        "http.go",
+        "query.go",
+        "write.go",
+    ],
+    importpath = "github.com/cayleygraph/cayley/internal/http",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//clog:go_default_library",
+        "//graph:go_default_library",
+        "//internal/decompressor:go_default_library",
+        "//internal/gephi:go_default_library",
+        "//quad:go_default_library",
+        "//quad/nquads:go_default_library",
+        "//query:go_default_library",
+        "//server/http:go_default_library",
+        "@com_github_julienschmidt_httprouter//:go_default_library",
+        "@com_github_russross_blackfriday//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["http_test.go"],
+    importpath = "github.com/cayleygraph/cayley/internal/http",
+    library = ":go_default_library",
+    deps = ["//quad:go_default_library"],
+)
